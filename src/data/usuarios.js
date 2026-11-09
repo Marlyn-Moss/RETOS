@@ -11,6 +11,12 @@ export const usuarios = [
     nombre: "Estudiante RETOS",
     correo: "estudiante@retos.edu.sv",
     password: "Retos2027"
+  },
+  {
+    id: 2,
+    nombre: "Estudiante RETOS",
+    correo: "mmoz@retos.edu.sv",
+    password: "Retos2027"
   }
 ];
 

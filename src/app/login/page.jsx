@@ -68,10 +68,14 @@ export default function LoginPage() {
     }
 
     const correoIngresado = formulario.correo.trim().toLowerCase();
+    const passwordIngresada = formulario.password.trim();
+    const contieneMayusculas = /[A-ZÁÉÍÓÚÑÜ]/.test(passwordIngresada);
+
     const usuarioEncontrado = usuarios.find(
       (u) =>
-        u.correo.toLowerCase() === correoIngresado &&
-        u.password.toLowerCase() === formulario.password
+        u.correo.trim().toLowerCase() === correoIngresado &&
+        !contieneMayusculas &&
+        u.password.trim().toLowerCase() === passwordIngresada.toLowerCase()
     );
 
     if (!usuarioEncontrado) {
