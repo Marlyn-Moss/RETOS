@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --hostname 10.10.0.41",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -20,4 +20,3 @@
     "tailwindcss": "^3.4.17"
   }
 }
-
