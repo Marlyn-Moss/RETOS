@@ -78,9 +78,14 @@ export function guardarInscripcion(datosFormulario) {
 
   const edadNum = Number(datosFormulario.edad);
   const tipoDocumento =
-    edadNum >= 18
+    edadNum > 18
       ? "Número de DUI del estudiante"
       : "Número de DUI del responsable";
+
+  const nacionalidadProcesada =
+    datosFormulario.nacionalidad === "Guatemalteca"
+      ? "Hondureña"
+      : datosFormulario.nacionalidad;
 
   const ahora = new Date();
   const fechaFormateada = ahora.toLocaleDateString("es-SV", {
@@ -89,8 +94,6 @@ export function guardarInscripcion(datosFormulario) {
     year: "numeric"
   });
 
-  // Se conserva el identificador RETOS-2027-0001 asociado al registro guardado
-  // para que no cambie al recargar la página.
   const registroExistente = obtenerInscripcion();
   const idInscripcion =
     registroExistente && registroExistente.idInscripcion
@@ -99,11 +102,11 @@ export function guardarInscripcion(datosFormulario) {
 
   const registroCompleto = {
     idInscripcion,
-    nombreCompleto: datosFormulario.nombreCompleto.trim(),
+    nombreCompleto: datosFormulario.nombreCompleto,
     edad: edadNum,
     tipoDocumento,
     dui: datosFormulario.dui.trim(),
-    nacionalidad: datosFormulario.nacionalidad,
+    nacionalidad: nacionalidadProcesada,
     telefono: datosFormulario.telefono.trim(),
     genero: datosFormulario.genero,
     carrera: datosFormulario.carrera,
@@ -133,3 +136,14 @@ export function obtenerInscripcion() {
   }
 }
 
+/**
+ * Actualiza el registro almacenado en localStorage omitiendo el teléfono.
+ */
+export function sincronizarInscripcionLocal(registro) {
+  if (typeof window === "undefined" || !registro) return;
+  const copia = {
+    ...registro,
+    telefono: ""
+  };
+  window.localStorage.setItem(INSCRIPCION_KEY, JSON.stringify(copia));
+}

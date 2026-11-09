@@ -71,7 +71,7 @@ export default function LoginPage() {
     const usuarioEncontrado = usuarios.find(
       (u) =>
         u.correo.toLowerCase() === correoIngresado &&
-        u.password === formulario.password
+        u.password.toLowerCase() === formulario.password
     );
 
     if (!usuarioEncontrado) {

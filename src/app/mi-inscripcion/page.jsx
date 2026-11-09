@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FileText, ArrowLeft, AlertCircle, CheckCircle2 } from "lucide-react";
-import { obtenerSesion, obtenerInscripcion } from "@/lib/storage";
+import {
+  obtenerSesion,
+  obtenerInscripcion,
+  sincronizarInscripcionLocal
+} from "@/lib/storage";
 
 export default function MiInscripcionPage() {
   const router = useRouter();
@@ -19,7 +23,30 @@ export default function MiInscripcionPage() {
     }
 
     const datosGuardados = obtenerInscripcion();
-    setInscripcion(datosGuardados);
+    if (datosGuardados) {
+      const entradasNav =
+        typeof window !== "undefined" &&
+        window.performance &&
+        typeof window.performance.getEntriesByType === "function"
+          ? window.performance.getEntriesByType("navigation")
+          : [];
+      const fueRecarga =
+        entradasNav.length > 0 && entradasNav[0].type === "reload";
+
+      sincronizarInscripcionLocal(datosGuardados);
+
+      if (fueRecarga) {
+        setInscripcion({
+          ...datosGuardados,
+          telefono: ""
+        });
+      } else {
+        setInscripcion(datosGuardados);
+      }
+    } else {
+      setInscripcion(null);
+    }
+
     setCargando(false);
   }, [router]);
 
@@ -207,4 +234,3 @@ export default function MiInscripcionPage() {
     </div>
   );
 }
-

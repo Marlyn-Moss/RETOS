@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { ClipboardList, CheckCircle2, FileText } from "lucide-react";
+import { ClipboardList, CheckCircle2 } from "lucide-react";
 import InputField from "@/components/InputField";
 import SelectField from "@/components/SelectField";
 import { nombresCarreras, nacionalidades, generos } from "@/data/carreras";
@@ -15,14 +14,12 @@ import {
 import {
   obtenerSesion,
   obtenerCarreraPreseleccionada,
-  guardarInscripcion,
-  obtenerInscripcion
+  guardarInscripcion
 } from "@/lib/storage";
 
 export default function InscripcionPage() {
   const router = useRouter();
   const [verificandoSesion, setVerificandoSesion] = useState(true);
-  const [tieneInscripcionPrevia, setTieneInscripcionPrevia] = useState(false);
 
   const [datos, setDatos] = useState({
     nombreCompleto: "",
@@ -52,19 +49,13 @@ export default function InscripcionPage() {
       }));
     }
 
-    const inscripcionGuardada = obtenerInscripcion();
-    if (inscripcionGuardada) {
-      setTieneInscripcionPrevia(true);
-    }
-
     setVerificandoSesion(false);
   }, [router]);
 
-  // Determinar etiqueta de DUI dinámicamente según la edad ingresada
   const edadTexto = String(datos.edad ?? "").trim();
   const edadNumero = Number(edadTexto);
   const esMenorDeEdad =
-    edadTexto !== "" && !Number.isNaN(edadNumero) && edadNumero < 18;
+    edadTexto !== "" && !Number.isNaN(edadNumero) && edadNumero <= 18;
 
   const etiquetaDui = esMenorDeEdad
     ? "Número de DUI del responsable"
@@ -74,7 +65,6 @@ export default function InscripcionPage() {
     const { name, value } = e.target;
     let valorProcesado = value;
 
-    // Para teléfono: no permitir letras y aplicar formato XXXX-XXXX de 8 dígitos
     if (name === "telefono") {
       valorProcesado = formatearTelefono(value);
     }
@@ -86,7 +76,6 @@ export default function InscripcionPage() {
 
     setDatos(nuevosDatos);
 
-    // Validar durante la interacción
     const mensajeError = validarCampoInscripcion(name, valorProcesado);
     setErrores((prev) => ({
       ...prev,
@@ -111,7 +100,6 @@ export default function InscripcionPage() {
   const manejarEnvio = (e) => {
     e.preventDefault();
 
-    // 1. Validar nuevamente toda la información antes de enviar
     const resultadoValidacion = validarFormularioInscripcion(datos);
     setErrores(resultadoValidacion.errores);
     setCamposTocados({
@@ -128,10 +116,7 @@ export default function InscripcionPage() {
       return;
     }
 
-    // 2. Guardar los datos en localStorage
     guardarInscripcion(datos);
-
-    // 3. Redirigir a la pantalla de confirmación
     router.push("/inscripcion/confirmacion");
   };
 
@@ -148,23 +133,6 @@ export default function InscripcionPage() {
   return (
     <div className="flex-1 py-10 px-4 sm:px-6 lg:px-8 bg-slate-50">
       <div className="max-w-3xl mx-auto space-y-6">
-        {tieneInscripcionPrevia && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 text-sm text-emerald-950">
-              <FileText className="w-5 h-5 text-emerald-700 shrink-0" />
-              <span>
-                Ya cuentas con una inscripción registrada en este navegador.
-              </span>
-            </div>
-            <Link
-              href="/mi-inscripcion"
-              className="text-xs font-semibold bg-emerald-800 hover:bg-emerald-900 text-white px-3.5 py-2 rounded-lg transition-colors shrink-0"
-            >
-              Ver mi inscripción
-            </Link>
-          </div>
-        )}
-
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           {/* Encabezado del formulario */}
           <div className="bg-emerald-950 text-white px-6 py-6 sm:px-8 border-b border-emerald-900">

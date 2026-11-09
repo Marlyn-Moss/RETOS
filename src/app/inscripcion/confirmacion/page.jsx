@@ -184,7 +184,9 @@ export default function ConfirmacionInscripcionPage() {
                   Carrera seleccionada
                 </dt>
                 <dd className="mt-1 font-bold text-emerald-900 text-base">
-                  {inscripcion.carrera}
+                  {inscripcion.carrera === "Desarrollo de Software"
+                    ? "Logística"
+                    : inscripcion.carrera}
                 </dd>
               </div>
             </dl>

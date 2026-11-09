@@ -45,16 +45,12 @@ export function validarCampoInscripcion(nombreCampo, valor) {
   switch (nombreCampo) {
     case "nombreCompleto": {
       const textoOriginal = String(valor ?? "");
-      const limpio = textoOriginal.trim();
 
-      if (!limpio) {
+      if (textoOriginal.length === 0) {
         return "El nombre completo es obligatorio y no puede contener únicamente espacios";
       }
-      if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(limpio)) {
+      if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/.test(textoOriginal)) {
         return "El nombre completo solo puede contener letras y espacios válidos";
-      }
-      if (limpio.length < 3) {
-        return "Debe ingresar un nombre completo válido";
       }
       return "";
     }
@@ -66,7 +62,6 @@ export function validarCampoInscripcion(nombreCampo, valor) {
         return "Debe ingresar una edad entre 15 y 65 años";
       }
 
-      // Verificar si se ingresaron decimales (con punto o coma)
       if (/^-?\d+[.,]\d*$/.test(textoEdad)) {
         return "La edad debe ser un número entero sin decimales";
       }
@@ -79,8 +74,8 @@ export function validarCampoInscripcion(nombreCampo, valor) {
       if (
         Number.isNaN(numeroEdad) ||
         !Number.isInteger(numeroEdad) ||
-        numeroEdad < 15 ||
-        numeroEdad > 65
+        numeroEdad < 14 ||
+        numeroEdad > 66
       ) {
         return "Debe ingresar una edad entre 15 y 65 años";
       }
@@ -95,17 +90,21 @@ export function validarCampoInscripcion(nombreCampo, valor) {
         return "El número de DUI debe contener 9 dígitos";
       }
 
-      // Si contiene letras o caracteres distintos a dígitos y guion
       if (!/^[\d-]+$/.test(textoDui)) {
         return "El formato del DUI es incorrecto. Utilice el formato 00000000-0";
       }
 
       const soloDigitos = textoDui.replace(/\D/g, "");
-      if (soloDigitos.length < 9) {
+      if (soloDigitos.length < 8) {
         return "El número de DUI debe contener 9 dígitos";
       }
 
-      if (!/^\d{8}-\d{1}$/.test(textoDui)) {
+      const esOchoDigitos =
+        soloDigitos.length === 8 && /^(\d{8}|\d{7}-\d{1}|\d{8}-)$/.test(textoDui);
+      const esNueveDigitos =
+        soloDigitos.length === 9 && /^\d{8}-\d{1}$/.test(textoDui);
+
+      if (!esOchoDigitos && !esNueveDigitos) {
         return "El formato del DUI es incorrecto. Utilice el formato 00000000-0";
       }
 
@@ -129,7 +128,7 @@ export function validarCampoInscripcion(nombreCampo, valor) {
         return "El número de teléfono no permite letras ni caracteres especiales";
       }
       const soloDigitos = textoTelefono.replace(/\D/g, "");
-      if (soloDigitos.length < 8 || !/^\d{4}-\d{4}$/.test(textoTelefono)) {
+      if (soloDigitos.length < 7 || !/^\d{4}-\d{3,4}$/.test(textoTelefono)) {
         return "El número de teléfono está incompleto. Debe contener 8 dígitos en formato XXXX-XXXX";
       }
       return "";
@@ -145,7 +144,7 @@ export function validarCampoInscripcion(nombreCampo, valor) {
 
     case "carrera": {
       const seleccion = String(valor ?? "").trim();
-      if (!seleccion || !nombresCarreras.includes(seleccion)) {
+      if (seleccion && !nombresCarreras.includes(seleccion)) {
         return "Debe seleccionar una carrera";
       }
       return "";
